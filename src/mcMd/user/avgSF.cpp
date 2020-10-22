@@ -31,7 +31,9 @@ int main(){
    cout << "Set the end file to be read:";
    cin >> end;
    cout << std::endl;  
- 
+   //start = 6;
+   //end = 8;
+  
    ifstream inFileName;
    ifstream IOFileName (Pre+to_string(end)+Suff);
    ofstream outFileName ("AvgSF_full.dat");
@@ -74,7 +76,7 @@ int main(){
       int iStar = 1;
 
       inFileName.open (Pre+to_string(iFile)+Suff);
-
+      std::cout<<"*************************"<<iFile<<"*************************"<<std::endl;
       while ( getline( inFileName, line ) ) {
          std::istringstream is( line );
 
@@ -159,6 +161,7 @@ int main(){
 
    }
 
+   std::cout<<"Averaging from file "<<start<<" to "<<end<<std::endl;
 
 return 0;
 }
