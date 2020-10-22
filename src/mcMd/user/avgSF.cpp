@@ -6,6 +6,9 @@
 #include <iostream>
 #include <iterator> 
 #include <fstream>
+#include <string>
+#include <sstream>
+
 
 using namespace std;
 using namespace Util;
@@ -14,8 +17,23 @@ int main(){
 
    //string InFilename = "StructureFactor.dat"
    //string OutFilename = "AvgSF.dat"
-   ifstream inFileName ("StructureFactor.dat");
-   ifstream IOFileName ("StructureFactor.dat");
+   
+
+   std::string Pre ("StructureFactor");
+   std::string Suff (".dat");
+  
+   int start, end;
+ 
+   cout << "Set the start file to be read:";
+   cin >> start;
+   cout << std::endl;
+   
+   cout << "Set the end file to be read:";
+   cin >> end;
+   cout << std::endl;  
+ 
+   ifstream inFileName;
+   ifstream IOFileName (Pre+to_string(end)+Suff);
    ofstream outFileName ("AvgSF_full.dat");
    ofstream outFileName_comp ("AvgSF.dat");
    string line;
@@ -39,11 +57,6 @@ int main(){
    // SF(iStar) is the Average object which should be used to 
    // get average and error on Star iStar
    FArray <Average, nStar> SF;
-  
-   // This basically denotes line number that is currently being
-   // read from the file. The corresponding star value would be
-   // iStar-1.
-   int iStar = 1; 
 
    // reads array of double values from the text file
    std::vector<double> readLine;
@@ -53,39 +66,78 @@ int main(){
    cout.precision(17);
 
    int counter = 1;
+   for (int iFile = start; iFile <= end; iFile+=1) {
 
-   while ( getline( inFileName, line ) ) {
-      std::istringstream is( line );
+      // This basically denotes line number that is currently being
+      // read from the file. The corresponding star value would be
+      // iStar-1.
+      int iStar = 1;
 
-      readLine.insert (readLine.begin(), std::istream_iterator<double>(is), 
-                         std::istream_iterator<double>() );
+      inFileName.open (Pre+to_string(iFile)+Suff);
 
-      cout<<counter<<"\t"<< readLine.back() << endl;
+      while ( getline( inFileName, line ) ) {
+         std::istringstream is( line );
+
+         readLine.insert (readLine.begin(), std::istream_iterator<double>(is), 
+                            std::istream_iterator<double>() );
+
+         cout<<counter<<"\t"<< readLine.back() << endl;
   
-      counter++;
-
-      // add sample value to iStar-1 as counting over there starts
-      // from 0
-      SF [iStar-1].sample(readLine.back());
-
-      iStar++;
-
-      if ((iStar % (nStar+1)) == 0){
-
-         // read blank line
-         getline( inFileName, line );
-
-         //Also reinitialize the value of iStar to 1
-         iStar = 1;
+         counter++;
  
+         // add sample value to iStar-1 as counting over there starts
+         // from 0
+         SF [iStar-1].sample(readLine.back());
+
+         iStar++;
+
+         if ((iStar % (nStar+1)) == 0){
+
+            // read blank line
+            getline( inFileName, line );
+
+            //Also reinitialize the value of iStar to 1
+            iStar = 1;
+ 
+         }
+
+         readLine.clear();
       }
 
-      readLine.clear();
+      inFileName.close();
    }
 
-   inFileName.close();
 
-   for (iStar = 1; iStar <= nStar; iStar++){
+//   while ( getline( inFileName_cont, line ) ) { 
+//      std::istringstream is( line );
+//
+//      readLine.insert (readLine.begin(), std::istream_iterator<double>(is), 
+//                         std::istream_iterator<double>() );
+//
+//      cout<<counter<<"\t"<< readLine.back() << endl;
+//  
+//      counter++;
+//
+//      SF [iStar-1].sample(readLine.back());
+//
+//      iStar++;
+//
+//      if ((iStar % (nStar+1)) == 0){ 
+//
+//         getline( inFileName_cont, line );
+//
+//         iStar = 1;
+// 
+//      }   
+//
+//      readLine.clear();
+//   }   
+//
+//   inFileName_cont.close();
+
+
+
+   for (int iStar = 1; iStar <= nStar; iStar++){
 
       getline( IOFileName, line );
       std::istringstream is( line );
